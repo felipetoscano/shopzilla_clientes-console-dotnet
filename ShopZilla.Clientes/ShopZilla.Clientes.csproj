@@ -4,6 +4,9 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+	<ContainerImageName>shopzilla-clientes</ContainerImageName>
+	<ContainerImageTags>latest</ContainerImageTags>
+	<ContainerRuntimeIdentifier>linux-x64</ContainerRuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,5 +14,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.7" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+	<PackageReference Include="Microsoft.NET.Build.Containers" Version="7.0.304" />
   </ItemGroup>
 </Project>
