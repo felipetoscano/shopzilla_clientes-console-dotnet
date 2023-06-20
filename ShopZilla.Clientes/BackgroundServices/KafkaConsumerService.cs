@@ -1,13 +1,12 @@
 ﻿using Confluent.Kafka;
-using Microsoft.Extensions.DependencyInjection;
 using ShopZilla.Clientes.Dal;
 using ShopZilla.Clientes.Entities;
 using ShopZilla.Clientes.Models;
 using System.Text.Json;
 
-namespace ShopZilla.Clientes.Services
+namespace ShopZilla.Clientes.BackgroundServices
 {
-    public class KafkaConsumerService
+    public class KafkaConsumerService : BackgroundService
     {
         private readonly ConnectionStrings _connectionStrings;
         private readonly KafkaSettings _kafkaSettings;
@@ -20,7 +19,12 @@ namespace ShopZilla.Clientes.Services
             _serviceProvider = serviceProvider;
         }
 
-        public void ConsumirPedidosConfirmados(CancellationToken cancellationToken)
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            return ObterTarefaConsumirPedidosConfirmados(stoppingToken);
+        }
+
+        public Task ObterTarefaConsumirPedidosConfirmados(CancellationToken stoppingToken)
         {
             var config = ObterConfiguracaoConsumidor();
             var consumidor = ObterConsumidorTopicoConfirmacaoPedido(config);
@@ -28,11 +32,14 @@ namespace ShopZilla.Clientes.Services
             try
             {
                 Console.WriteLine("Consumo iniciado");
-                IniciarConsumoTopico(consumidor, cancellationToken);
+
+                return ObterTarefaConsumoTopico(consumidor, stoppingToken);
             }
             catch (OperationCanceledException)
             {
                 consumidor.Close();
+
+                throw;
             }
         }
 
@@ -53,21 +60,24 @@ namespace ShopZilla.Clientes.Services
             return consumidor;
         }
 
-        private void IniciarConsumoTopico(IConsumer<Ignore, string> consumidor, CancellationToken cancellationToken)
+        private Task ObterTarefaConsumoTopico(IConsumer<Ignore, string> consumidor, CancellationToken stoppingToken)
         {
-            while (!cancellationToken.IsCancellationRequested)
+            return Task.Run(() =>
             {
-                var mensagem = consumidor.Consume(cancellationToken);
-                var pedido = JsonSerializer.Deserialize<PedidoEntity>(mensagem.Message.Value);
-
-                using (var scope = _serviceProvider.CreateScope())
+                while (!stoppingToken.IsCancellationRequested)
                 {
-                    var clientesDal = scope.ServiceProvider.GetRequiredService<ClientesDal>();
-                    new ProcessadorPedidos().Processar(pedido);
-                }
+                    var mensagem = consumidor.Consume(stoppingToken);
+                    var pedido = JsonSerializer.Deserialize<PedidoEntity>(mensagem.Message.Value);
 
-                Console.WriteLine("Registro da fila consumido com sucesso");
-            }
+                    using (var scope = _serviceProvider.CreateScope())
+                    {
+                        var clientesDal = scope.ServiceProvider.GetRequiredService<ClientesDal>();
+                        new ProcessadorPedidos().Processar(pedido);
+                    }
+
+                    Console.WriteLine("Registro da fila consumido com sucesso");
+                }
+            }, CancellationToken.None);
         }
     }
 }
