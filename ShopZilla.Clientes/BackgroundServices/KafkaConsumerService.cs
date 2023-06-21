@@ -21,11 +21,6 @@ namespace ShopZilla.Clientes.BackgroundServices
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            return ObterTarefaConsumirPedidosConfirmados(stoppingToken);
-        }
-
-        public Task ObterTarefaConsumirPedidosConfirmados(CancellationToken stoppingToken)
-        {
             var config = ObterConfiguracaoConsumidor();
             var consumidor = ObterConsumidorTopicoConfirmacaoPedido(config);
 
@@ -33,7 +28,7 @@ namespace ShopZilla.Clientes.BackgroundServices
             {
                 Console.WriteLine("Consumo iniciado");
 
-                return ObterTarefaConsumoTopico(consumidor, stoppingToken);
+                return ObterTarefaConsumoTopicoConfirmacaoPedido(consumidor, stoppingToken);
             }
             catch (OperationCanceledException)
             {
@@ -60,7 +55,7 @@ namespace ShopZilla.Clientes.BackgroundServices
             return consumidor;
         }
 
-        private Task ObterTarefaConsumoTopico(IConsumer<Ignore, string> consumidor, CancellationToken stoppingToken)
+        private Task ObterTarefaConsumoTopicoConfirmacaoPedido(IConsumer<Ignore, string> consumidor, CancellationToken stoppingToken)
         {
             return Task.Run(() =>
             {
