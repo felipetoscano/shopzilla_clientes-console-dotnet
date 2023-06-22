@@ -8,13 +8,13 @@ Este projeto faz parte de um conjunto de outros projetos ShopZilla, destinados a
 
 O ShopZilla é um projeto que busca simular a efetivação de compras, atualização de estoque e envio de notificações para os clientes através de aplicações independentes, onde aproveitando da arquitetura orientada a eventos, caso algum sistema esteja completamente fora, não vai afetar o conjunto como um todo.
 
-![alt text](https://github.com/felipetoscano/shopzilla_estoque-console-dotnet/blob/main/resources/shopzilla-geral.jpg)
+![alt text](https://github.com/felipetoscano/shopzilla_clientes-console-dotnet/blob/main/resources/shopzilla-geral.jpg)
 
 ## Aplicação Clientes 
 
 Esta aplicação envia mensagens de atualização do pedido conforme os eventos no tópico CONFIRMACAO_PEDIDO onde é inscrita.
 
-![alt text](https://github.com/felipetoscano/shopzilla_estoque-console-dotnet/blob/main/resources/shopzilla-estoque.jpg)
+![alt text](https://github.com/felipetoscano/shopzilla_clientes-console-dotnet/blob/main/resources/shopzilla-clientes.jpg)
 
 ## Execução
 
